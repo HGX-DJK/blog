@@ -17,7 +17,7 @@
 - [canvas生产base64图片上图](./code/map/mapTalks/markerWithCanvasImage.html);
 - [实现迁徙动线图](./code/map/mapTalks/ODLayer.html);
 - [根据路线运动示例](./code/map/mapTalks/routeplayer.html)
-## 2、模型相关
+## 二、模型相关
 ### 2.1、上海三大件模型
 - [东方明珠三维模型](./models/sh_building_models/dfmz.glb)
 - [中心大厦三维模型](./models/sh_building_models)
