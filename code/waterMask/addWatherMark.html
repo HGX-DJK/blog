@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>添加水印</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html{
+            height: 100%;
+            overflow:hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+    </div>
+    <script>
+        /**添加水印操作*/
+        addWaterMask("xm-15007283798","box");
+        function addWaterMask(text, sourceBody) {
+            let elementDomParent = document.getElementById(`.${sourceBody}`);
+            var id = Math.random() * 10000 + '-' + Math.random() * 10000 + '/' + Math.random() * 10000
+
+            if (document.getElementById(id) !== null) {
+                document.body.removeChild(document.getElementById(id))
+            }
+
+            var can = document.createElement('canvas')
+            can.width = 180 //设置水印之间的左右间距
+            can.height = 50 //设置水印之间的上下间距
+
+            var cans = can.getContext('2d')
+            cans.rotate(-10 * Math.PI / 180)
+            cans.font = '12px Vedana'
+            cans.fillStyle = 'rgba(0, 0, 0, .5)'
+            cans.textAlign = 'left'
+            cans.textBaseline = 'Middle'
+            cans.fillText(text, can.width / 20, can.height)
+
+            var water_div = document.createElement('div')
+            water_div.id = id
+            water_div.style.pointerEvents = 'none'
+            water_div.style.background = 'url(' + can.toDataURL('image/png') + ') left top repeat'
+            if (elementDomParent) {
+                water_div.style.width = '100%'
+                water_div.style.height = '100%'
+                elementDomParent.appendChild(water_div)
+            } else {
+                water_div.style.top = '3px'
+                water_div.style.left = '0px'
+                water_div.style.position = 'fixed'
+                water_div.style.zIndex = '100000'
+                water_div.style.width = document.documentElement.clientWidth + 'px'
+                water_div.style.height = document.documentElement.clientHeight + 'px'
+                document.body.appendChild(water_div)
+            }
+            return id
+        }
+    </script>
+</body>
+
+</html>

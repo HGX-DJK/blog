@@ -1,0 +1,37 @@
+{
+  "style": [
+    {
+      "renderPlugin": {
+        "dataConfig": {
+          "type": "round-tube",
+          "radialSegments": 14,
+          "metric": "mm"
+        },
+        "sceneConfig": {},
+        "type": "tube"
+      },
+      "symbol": {
+        "lineColor": {
+          "type": "categorical",
+          "property": "type",
+          "stops": [
+              ["JS", "rgb(0,255,255)"],
+              ["YS", "rgb(76,57,38)"],
+              ["TQ", "rgb(255,0,255)"]
+          ],
+          "default": "#ffff00"
+        },
+        "lineWidth":1000,  
+        "uvScale": [2, 2],
+        "metallicFactor": 0.5,
+        "roughnessFactor": 0.3
+      },
+      "filter": {
+        "value":["has", "size"]
+      }
+    }
+  ]
+}
+
+
+

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>根据路线运动示例</title>
+        <script src="https://unpkg.com/jquery@<3.3.1/dist/jquery.min.js"></script>
+        <script src="https://unpkg.com/maptalks/dist/maptalks.min.js"></script>
+        <script type="text/javascript" src="https://unpkg.com/@maptalks/gl-layers/dist/maptalks-gl-layers.js"></script>
+        <script src="https://unpkg.com/maptalks.routeplayer/dist/maptalks.routeplayer.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://unpkg.com/maptalks/dist/maptalks.css"
+        />
+        <script src="./js/route.js"></script>
+        <style>
+            html,
+            body {
+                margin: 0px;
+                height: 100%;
+                width: 100%;
+            }
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+            #control {
+                position: absolute;
+                justify-content: space-around;
+                display: flex;
+                top: 0rem;
+                left: 0rem;
+                padding:1rem 2rem;
+                width: calc(100% - 4rem);
+                height: 3rem;
+                background-color: rgb(238,244,251);
+            }
+            a {
+                color: #0077ff;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id="control">
+            <a href="javascript:play();">Play</a><br />
+            <a href="javascript:pause();">Pause</a><br />
+            <a href="javascript:cancel();">Cancel</a><br />
+            <a href="javascript:finish();">Finish</a><br />
+            <a href="javascript:speed(0.5);">0.5X</a><br />
+            <a href="javascript:speed(1);">1X</a><br />
+            <a href="javascript:speed(2);">2X</a><br />
+            <a href="javascript:speed(4);">4X</a><br />
+            <span id="info">info: </span><br />
+            <label>
+                <input type="checkbox" id="showRoute" checked />
+                showRoutes
+            </label><br />
+            <label>
+                <input type="checkbox" id="showTrail" checked />
+                showTrail
+            </label>
+        </div>
+        <script>
+            const map = new maptalks.Map("map", {
+                center: [121.505, 31.2611],
+                zoom: 14,
+                attributionControl: {
+                    content:
+                        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                },
+                baseLayer: new maptalks.TileLayer("base", {
+                    urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    subdomains: ["a","b","c","d"]
+                })
+            });
+            route.path.forEach(c => {
+                c[4] = c[3];
+                c[3] = c[2];
+                c[2] = Math.random() * 100 + 100;
+            });
+            const groupLayer = new maptalks.GroupGLLayer("group", []).addTo(map);
+            const player = new maptalks.Route3DPlayer(route, groupLayer, {
+                    maxTrailLine: 10,
+                    showTrail: false,
+                    showMarker: false,
+                    lineSymbol: {
+                        lineColor: '#f0f',
+                        lineWidth: 1
+                    }
+                });
+            const unitTime = player.getUnitTime();
+            const gltflayer = new maptalks.GLTFLayer('gltf').addTo(groupLayer);
+            let gltfmarker = null;
+            player.on("playing", function(param) {
+                if (
+                    player.getCurrentProperties(0) !== undefined &&
+                    player.getCurrentProperties(0) !== null
+                ) {
+                    $("#info").text(
+                        "info: " + player.getCurrentProperties(0).info
+                    );
+                    if (!gltfmarker) {
+                        gltfmarker = new maptalks.GLTFMarker(param.coordinate, {
+                            symbol: {
+                                url: 'gltf/suv.gltf',
+                                modelHeight: 100,
+                                rotationZ: param.bearing - 90,
+                                rotationX: -param.pitch
+                            }
+                        }).addTo(gltflayer);
+                    } else {
+                        gltfmarker.setCoordinates(param.coordinate);
+                        gltfmarker.updateSymbol({
+                            rotationZ: param.bearing - 90,
+                            rotationX: -param.pitch
+                        });
+                    }
+                }
+            });
+
+            player.on('playcancel playfinish', param => {
+                if (gltfmarker) {
+                    gltfmarker.setCoordinates(param.coordinate);
+                    gltfmarker.updateSymbol({
+                        rotationZ: param.bearing - 90,
+                        rotationX: -param.pitch
+                    });
+                }
+            });
+
+            $("#showRoute").change(function() {
+                var flag = $(this).is(":checked");
+                if (flag) {
+                    player.showRoute();
+                } else {
+                    player.hideRoute();
+                }
+            });
+
+            $("#showTrail").change(function() {
+                var flag = $(this).is(":checked");
+                if (flag) {
+                    player.showTrail();
+                } else {
+                    player.hideTrail();
+                }
+            });
+
+            // player.play();
+
+            function play() {
+                player.play();
+            }
+
+            function pause() {
+                player.pause();
+            }
+
+            function finish() {
+                player.finish();
+            }
+
+            function cancel() {
+                player.cancel();
+            }
+
+            function speed(t) {
+                player.setUnitTime(unitTime * t * 0.1);
+            }
+        </script>
+    </body>
+</html>

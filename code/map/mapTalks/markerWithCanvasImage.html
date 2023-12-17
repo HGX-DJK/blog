@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<meta charset='UTF-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1' />
+<title>canvas绘制图片marker上图</title>
+<style type='text/css'>
+  html,
+  body {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .container {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+<link rel='stylesheet' href='https://maptalks.com/api/maptalks.css' />
+<script type='text/javascript' src='https://maptalks.com/api/maptalks.min.js'></script>
+<script type='text/javascript' src='https://maptalks.com/api/maptalks-gl-layers.js'></script>
+
+<body>
+  <div id="map" class="container"></div>
+
+  <script>
+    const map = new maptalks.Map("map", {
+      center: [-0.113049, 51.498568],
+      zoom: 14,
+      pitch: 56,
+      baseLayer: new maptalks.TileLayer("base", {
+        urlTemplate: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        subdomains: ["a", "b", "c", "d"],
+        attribution: "&copy; <a href='http://osm.org'>OpenStreetMap</a> contributors, &copy; <a href='https://carto.com/'>CARTO</a>",
+      }),
+    });
+    /**获取canvas绘制的标签tag图片*/
+    let pngUrl = getCanvasPng(2.453, "武宁西路某条路", "#ff0000");
+    /**将标签tag图片通过marker的形式绘制到地图上 */
+    let pointObj = {
+        coordinate: [-0.113049, 51.498568]
+    }
+    addSpecialMarker("currentRoad", pointObj, pngUrl);
+
+    function getCanvasPng(idxValue = 2.453, roadName, currentColor = '#ff0000') {
+      // 获取Canvas元素
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      // 设置文本内容和样式
+      var leftText = idxValue;
+      var rightText = roadName;
+      ctx.font = '22px Arial';
+      //根据数据内容动态设置Canvas宽度
+      var leftTextWidth = ctx.measureText(leftText).width;
+      /**当指数为1时候,这时候根据内容无法很好的扩充开,此时可以设定一个固定的数值 */
+      if (idxValue == 1) {
+           leftTextWidth = 24
+      }
+      var rightTextWidth = ctx.measureText(rightText).width;
+      var devicePixelRatio = window.devicePixelRatio || 1;
+      canvas.width = (leftTextWidth + rightTextWidth);
+      // 设置Canvas的高度
+      canvas.height = 30 * devicePixelRatio;
+
+      //绘制坐标矩形,左边自定义的颜色
+      ctx.fillStyle = currentColor;
+      ctx.fillRect(0, 0, leftTextWidth, canvas.height);
+      //绘制右边矩形, 右边一半白色
+      ctx.fillStyle = '#ffffff'; // 白色背景
+      ctx.fillRect(leftTextWidth, 0, rightTextWidth, canvas.height);
+      /**绘制矩形的border */
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, 0, canvas.width, canvas.height)
+      /**字体的设置必须在canvas绘制完成之后设置才会生效 */
+      ctx.font = '16px Arial';
+      /**绘制左边 */
+      ctx.fillStyle = '#ffffff'; // 白色文本
+      var leftTextX = 10;
+      var leftTextY = (canvas.height + 10) / 2;
+      ctx.fillText(leftText, leftTextX, leftTextY);
+      /**绘制右边内容 */
+      ctx.fillStyle = '#10682a';
+      var rightTextX = leftTextWidth + 10;
+      var rightTextY = (canvas.height + 10) / 2;
+      ctx.fillText(rightText, rightTextX, rightTextY);
+
+      // 将Canvas转换为Base64图片数据
+      var dataURL = canvas.toDataURL();
+      return dataURL;
+    }
+
+    function addSpecialMarker(id, data, specialMarker) {
+      var layer = map.getLayer(id);
+      if (!layer) {
+        layer = new maptalks.VectorLayer(id).addTo(map);
+      }
+      let currentMarker = new maptalks.Marker(data.coordinate, {
+        'symbol': {
+            'markerFile': specialMarker,
+            "markerVerticalAlignment": "middle",
+            "markerHorizontalAlignment": "middle",
+            "markerTextFit": 'both',
+        },
+        'properties': data.properties
+      })
+      layer.addGeometry(currentMarker);
+    }
+
+  </script>
+</body>
+
+</html>

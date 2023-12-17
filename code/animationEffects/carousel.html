@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>轮播图</title>
+    <style>
+        * {
+            margin:0;
+            padding:0;
+        }
+        .box {
+            width:560px;
+            height:300px;
+            margin:100px auto;
+            overflow:hidden;
+            position:relative;
+
+        }
+        .rollImg {
+            width:3360px;
+            position:absolute;
+            top:0;
+            left:-560px;
+        }
+        .rollImg li {
+            width:560px;
+            height:300px;
+            list-style:none;
+            float:left;
+
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <!--图-->
+    <ul class="rollImg" id="rollImg">
+        <li><img src="../../imgs/carousel/4.jpg" alt=""></li>
+        <li><img src="../../imgs/carousel/1.jpg" alt=""></li>
+        <li><img src="../../imgs/carousel/2.jpg" alt=""></li>
+        <li><img src="../../imgs/carousel/3.jpg" alt=""></li>
+        <li><img src="../../imgs/carousel/4.jpg" alt=""></li>
+        <li><img src="../../imgs/carousel/1.jpg" alt=""></li>
+    </ul>
+</div>
+<script src="../js/animation.js"></script>
+<script>
+  
+    var index = 1;
+    function animation(){
+        index++;
+        // 使用示例
+        var rollImg = document.getElementById("rollImg");
+        var currentL = -index * 560;
+        CustomAnimate.animate(rollImg, {
+            left: currentL,
+        }, function() {
+            if (index > 4) {
+                index = 1;
+                currentL = -index * 560;
+                rollImg.style.left = currentL + 'px';
+            }
+        });;
+    }
+
+    setInterval(()=>{
+        animation();
+    },1000)
+</script>
+</body>
+</html>

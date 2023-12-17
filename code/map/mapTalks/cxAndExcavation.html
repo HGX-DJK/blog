@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>交互 - 绘制工具</title>
+<style type="text/css">
+  html,
+  body {
+    margin: 0px;
+    height: 100%;
+    width: 100%
+  }
+  .container {
+    width: 100%;
+    height: 100%
+  }
+  .button-group{
+    position: absolute;
+    top:1.2rem;
+    right: 15rem;
+  }
+  button{
+    background: #fff;
+    border:1px solid #e5e5e5;
+    padding:6px 1rem;
+    cursor: pointer;
+  }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/maptalks/dist/maptalks.css">
+<script type="text/javascript" src="https://unpkg.com/maptalks/dist/maptalks.min.js"></script>
+<script src="https://unpkg.com/maptalks.snap/dist/maptalks.snap.js"></script>
+<script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+
+<body>
+  <div id="map" class="container"></div>
+  <div class="button-group">
+       <button onclick="burrowFunction()">挖洞</button>
+  </div>
+  <script>
+    var map = new maptalks.Map('map', {
+      center: [121.46926879882812, 31.238176345825195],
+      zoom: 14,
+      baseLayer: new maptalks.TileLayer('base', {
+        urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+        subdomains: ['a', 'b', 'c', 'd'],
+        attribution: '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>'
+      })
+    });
+    let geom = {
+       type:"Polygon",
+       coordinates:[]
+    }
+    let statusFlag = "noburrow"    //noburrow 不挖洞；burrow挖洞
+    let geometry = maptalks.Geometry.fromJSON(geom);
+    var layer = new maptalks.VectorLayer('vector').addTo(map);
+    geometry.addTo(layer);
+    var drawTool = new maptalks.DrawTool({
+      mode: 'Point',
+      Symbol: {
+        markerType: "ellipse",
+      }
+    }).addTo(map).disable();
+
+    drawTool.on('drawend', function (param) {
+        let coordinates;
+        if(geometry){
+           coordinates = geometry.toGeoJSON().geometry.coordinates;
+        };
+        let geom = param.geometry.toGeoJSON().geometry;
+      
+        if(statusFlag == "burrow"){
+            layer.clear();
+            var basePolygon  = turf.polygon(coordinates);
+            var nextPolygon  = turf.polygon(geom.coordinates);
+            let flag = turf.booleanContains(basePolygon, nextPolygon);
+            if(flag){
+              coordinates =  [
+                  ...coordinates, 
+                  ...geom.coordinates
+              ];
+     
+              geom.coordinates = coordinates;
+              geom.type="Polygon"
+            }
+        }
+        console.log(geom);
+        geometry = maptalks.Geometry.fromJSON(geom).addTo(layer);
+    });
+
+    const snap = new maptalks.Snap(map);
+    drawTool.on('drawstart', function (param) {
+      const geometry = param.tempGeometry;
+      const mode = drawTool.getMode();
+      if (mode === 'linestring') {
+        geometry.setSymbol({
+          lineColor: 'red',
+          markerType: 'ellipse',
+          markerWidth: 10,
+          markerHeight: 10,
+          'markerPlacement': 'vertex',
+        })
+      }
+      if (mode === 'polygon') {
+        geometry.setSymbol({
+            polygonFill: "red",
+            lineColor: 'blue',
+            markerType: 'ellipse',
+            markerWidth: 10,
+            markerHeight: 10,
+            markerFill: "red",
+           'markerPlacement': 'vertex',
+        })
+      }
+      if (mode === 'point') {
+        geometry.setSymbol({
+            markerFile: './poi.png'
+        })
+      }
+      snap.effectGeometry(param.tempGeometry);
+      snap.config({
+          filterGeometries: () => {
+              return layer.getGeometries();
+          }
+      })
+    });
+
+    var items = ['Polygon','Rectangle'].map(function (value) {
+      return {
+        item: value,
+        click: function () {
+             drawTool.setMode(value).enable();
+        }
+      };
+    });
+
+    var toolbar = new maptalks.control.Toolbar({
+      items: [
+        {
+          item: 'Shape',
+          children: items
+        },
+        {
+          item: 'Disable',
+          click: function () {
+            drawTool.disable();
+          }
+        },
+        {
+          item: 'Clear',
+          click: function () {
+            layer.clear();
+          }
+        }
+      ]
+    }).addTo(map);
+
+
+    function burrowFunction(){
+        statusFlag = "burrow"
+    }
+
+  </script>
+</body>
+
+</html>

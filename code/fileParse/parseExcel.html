@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>读取Excel</title>
+	<script src="https://code.jquery.com/jquery-2.2.4.js"
+		integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+	<script src="https://cdn.bootcss.com/xlsx/0.15.1/xlsx.core.min.js"></script>
+  <style>
+       * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .content-box {
+          display: inline-block;
+          height: 100%;
+          width: calc(100% - 8rem);
+          padding: 2rem 4rem;
+        }
+
+  </style>
+</head>
+
+<body>
+  <div class="content-box">
+      <div class="operation">
+        <label for="excel-file" class="btn btn-success">导入Excel文件</label>
+        <input type="file" name="excel-file" id="excel-file" />
+      </div>
+    
+      <table id="context">
+    
+      </table>
+  </div>
+
+
+	<script>
+		$('#excel-file').change(function (e) {
+			try {
+			    new Uint8Array([1,2]).slice(0,2);
+			} catch (e) {
+			    console.log("[Uint8Array"+e.description+"]这里使用【Array.slice】。");
+			    //IE或有些浏览器不支持Uint8Array.slice()方法。改成使用Array.slice()方法
+			    Uint8Array.prototype.slice = Array.prototype.slice;
+			}
+			var url=$('#excel-file').val();
+			if(!url){return;}
+			var suffix=url.substring(url.lastIndexOf(".")+1,url.length);
+			if(!(suffix=="xls"||suffix=="xlsx")){
+			    return alert("文件类型不正确");
+			}
+			var files = e.target.files;
+			console.log(files[0]);
+			var fileReader = new FileReader();
+      /**以二进制方式打开文件*/
+			fileReader.readAsArrayBuffer(files[0]);
+			fileReader.onload = function (ev) {
+				try {
+					var data = ev.target.result;
+					var workbook = XLSX.read(data, { type: 'array' }),persons = [];
+				} catch (e) {
+					console.error(e);
+					return alert('文件类型不正确!');
+				}
+				//遍历每张表读取
+				for (var sheet in workbook.Sheets) {
+					if (workbook.Sheets.hasOwnProperty(sheet)) {
+						persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet], { raw: true, header: 1 }));
+						for ( var i = 0; i <persons.length; i++){
+						    var person=persons[i];
+						    var tr='<tr id="tr-'+i+'">';
+						    for (var j = 0; j <person.length; j++){
+						        tr+='<td>'+$.trim(person[j]?person[j]:"")+'</td>';
+						    }
+						    for (var k = 0; k < (6-person.length); k++) {
+						    	tr+='<td></td>';
+							}
+						    if(person.length>1){
+						        tr+='<td style="padding:6px;"><a href="javascript:$(\'#tr-'+i+'\').remove();" class="btn btn-danger btn-xs">删除</a></td></tr>';
+						        $("#context").append(tr);
+						    }
+						}
+						break;// 如果只取第一张表，就把beak注释取消
+					}
+				}
+				console.log(persons)
+			};
+		});
+
+	</script>
+</body>
+
+</html>
