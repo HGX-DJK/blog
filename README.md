@@ -26,6 +26,14 @@
 
 ### 1.5 地铁展示相关
 - [显示轨交地铁全景图](./code/subway/index.html)
+
+### 1.6 MVT数据的可视化解析
+- [解析MVT数据](./code/MVT-Process-master/index.html)
+
+### 1.7 H5实现图片转base64
+- [图片转base64](./code/H5-base64-encoder-master/index.html)
+
+
 ## 二、模型相关
 ### 2.1、上海三大件模型
 - [东方明珠三维模型](./models/sh_building_models/dfmz.glb)
