@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+	<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>高德地图 | 地铁图</title>
+	<link rel="stylesheet" type="text/css" href="./css/style.css?v=1.4">
+	<style type="text/css">
+	</style>
+</head>
+<body>
+<div class="sw-wrap">
+	<div class="sw-nav">
+		<div class="sw-nav-top ">
+			<div class="sw-city">
+				<div class="city-list fl">
+					<a class="city" href="javascript:void(0)" id="3100" cityname="shanghai">上海轨交线路全景图</a>
+				</div>
+			</div>
+			<div class="sw-shortcut">
+				<a href="http://www.amap.com" class="sw-shortcut-btn" id="sw-back">返回地图</a>
+			</div>
+		</div><!-- sw-nav-top end -->
+		<div class="sw-nav-bottom sw-caption">
+			<div class="line-caption-box">
+				<div class="line-caption-list">
+				</div>
+			</div>
+		</div><!-- sw-nav-bottom end -->
+	</div><!-- sw-nav end -->
+	<div class="sw-map">
+		<div id="subway-content" >
+			<div id="sw-toolbar">
+				<div class="zoom-btn" id="sw-zoomin-btn"></div>
+				<div id="sw-zoom-track">
+					<div id="sw-zoom-drag"></div>
+				</div>
+				<div class="zoom-btn" id="sw-zoomout-btn"></div>
+			</div>
+			<div id="subway"></div>
+		</div>
+		<div class="clr"></div>
+
+		<div id="tip-window">
+			<div class="line-name-box">
+				<span id="line-name-tip"></span>
+			</div>
+			<div class="line-name-arrow"></div>
+		</div>
+		<div class="loading-bg">
+			<div class="loading-outer">
+				<div class="loading">
+					<img class="loading-img" src="./img/subway/loading.gif">
+					<div class="loading-txt">正在加载，请稍候...</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="loading-bg-once">
+		<div class="loading-outer">
+			<div class="loading">
+				<img class="loading-img" src="./img/subway/loading.gif">
+				<div class="loading-txt">正在加载，请稍候...</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="./js/lib/jquery.min.js"></script>
+<script type="text/javascript" src="./js/lib/jscrollpane.min.js"></script>
+<script type="text/javascript" src="./js/lib/mousewheel.js"></script>
+<!--[if IE 6]> 
+	<script type="text/javascript" src="./js/lib/iepngfix.js"></script>
+<![endif]--> 
+<script type="text/javascript">
+if(document.addEventListener){
+	document.write('<script type="text/javascript" src="./js/lib/d3.v3.min.js"><\/script>');
+}
+</script>
+<script type="text/javascript">
+	document.write('<script type="text/javascript" src="js/subway'+ (document.addEventListener?"":"ie")+ '/basic.js"><\/script>');
+</script>
+<script type="text/javascript">
+	document.write('<script type="text/javascript" src="js/subway'+ (document.addEventListener?"":"ie")+ '/common.js?v=1.4"><\/script>');
+</script>
+<script type="text/javascript">
+	document.write('<script type="text/javascript" src="js/subway'+ (document.addEventListener?"":"ie")+ '/drw.js?v=1.4"><\/script>');
+</script>
+<script type="text/javascript">
+	document.write('<script type="text/javascript" src="js/subway'+ (document.addEventListener?"":"ie")+ '/main.js"><\/script>');
+</script>
+<script type="text/javascript">
+SW.swInit();
+</script>
+</body>
+</html>

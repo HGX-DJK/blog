@@ -18,10 +18,14 @@
 - [canvas生产base64图片上图](./code/map/mapTalks/markerWithCanvasImage.html);
 - [实现迁徙动线图](./code/map/mapTalks/ODLayer.html);
 - [根据路线运动示例](./code/map/mapTalks/routeplayer.html)；
+- [多边形设置缓冲区](./code/map/mapTalks/settingBuffer.html);
 ### 1.3 EXCEL相关
 - [读取Excel一个sheet或者多个sheet页展示](./code/fileParse/parseExcel.html);
 ### 1.4 水印相关
 - [全屏显示水印或者某个DOM元素显示水印](./code/waterMask/addWatherMark.html)
+
+### 1.5 地铁展示相关
+- [显示轨交地铁全景图](./code/subway/index.html)
 ## 二、模型相关
 ### 2.1、上海三大件模型
 - [东方明珠三维模型](./models/sh_building_models/dfmz.glb)

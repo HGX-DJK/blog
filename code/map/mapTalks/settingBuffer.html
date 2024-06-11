@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>图形 - Polygon</title>
+  <style type='text/css'>
+    html,
+    body {
+      margin: 0px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <link rel='stylesheet' href='https://maptalks.com/api/maptalks.css' />
+  <script type='text/javascript' src='https://maptalks.com/api/maptalks.min.js'></script>
+  <script type='text/javascript' src='https://maptalks.com/api/maptalks-gl-layers.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+
+
+  <body>
+    <div id="map" class="container"></div>
+
+    <script>
+      const map = new maptalks.Map("map", {
+        center: [-0.113049, 51.498568],
+        zoom: 14,
+        baseLayer: new maptalks.TileLayer("base", {
+          urlTemplate: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+          subdomains: ["a", "b", "c", "d"],
+          attribution: "&copy; <a href='http://osm.org'>OpenStreetMap</a> contributors, &copy; <a href='https://carto.com/'>CARTO</a>",
+        }),
+      });
+
+      const polygon = new maptalks.Polygon(
+        [
+          [
+            [ -0.13236090490727292, 51.50456971900687],
+            [-0.11407896826176511,  51.506760740677095,],
+            [ -0.10206267187504636, 51.4987977430076,],
+            [-0.10901495764164792, 51.486449673535816],
+            [-0.12034460852055417,  51.49778222716637],
+            [ -0.13236090490727292, 51.50456971900687]
+          ],
+        ], {
+          visible: true,
+          editable: true,
+          cursor: "pointer",
+          shadowBlur: 0,
+          shadowColor: "black",
+          draggable: false,
+          dragShadow: false, // display a shadow during dragging
+          drawOnAxis: null, // force dragging stick on a axis, can be: x, y
+          symbol: {
+            lineColor: "#34495e",
+            lineWidth: 2,
+            polygonFill: "rgb(135,196,240)",
+            polygonOpacity: 0.6,
+          },
+        }
+      );
+      map.on('click',e=>{
+        console.log(e,"wwwwwwwww");
+      })
+      expandPolygon();
+      var expandedPolygon = "";
+      function expandPolygon(){
+        let originalCoordinates = [
+            [ -0.13236090490727292, 51.50456971900687],
+            [-0.11407896826176511,  51.506760740677095,],
+            [ -0.10206267187504636, 51.4987977430076,],
+            [-0.10901495764164792, 51.486449673535816],
+            [-0.12034460852055417,  51.49778222716637],
+            [ -0.13236090490727292, 51.50456971900687]
+          ];
+        // 将坐标数组转换为Turf.js的多边形对象
+        var originalPolygon = turf.polygon([originalCoordinates]);
+        // 定义外扩距离
+        var expandDistance = 0.1;
+        // 使用Turf.js的buffer方法来扩大多边形的边界
+        expandedPolygon = turf.buffer(originalPolygon, expandDistance, { units: 'kilometers' });
+        console.log(expandedPolygon.geometry);
+
+        const polygon1 = new maptalks.Polygon(
+            expandedPolygon.geometry.coordinates, {
+                visible: true,
+                editable: true,
+                cursor: "pointer",
+                shadowBlur: 0,
+                shadowColor: "black",
+                draggable: false,
+                dragShadow: false, // display a shadow during dragging
+                drawOnAxis: null, // force dragging stick on a axis, can be: x, y
+                symbol: {
+                lineColor: "#34495e",
+                lineWidth: 2,
+                polygonFill: "rgb(135,196,240)",
+                polygonOpacity: 0.6,
+                },
+            }
+        );
+
+        new maptalks.VectorLayer("vector", [polygon,polygon1]).addTo(map);
+
+      }
+   
+    </script>
+  </body>
+
+</html>
